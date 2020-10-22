@@ -59,5 +59,46 @@ describe("El juego del impostor", function() {
 		usr.iniciarPartida();
 		expect(juego.partidas[codigo].fase.nombre).toEqual("jugando");
 	})
+
+	it("Hay un pinche impostor entre nosotros",function(){
+		juego.unirAPartida(codigo,"Azul");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(2);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");
+		juego.unirAPartida(codigo,"Arcoiris");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(3);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");	  	
+		juego.unirAPartida(codigo,"Rojo");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(4);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("completado");		
+		usr.iniciarPartida();
+		for (var i = 0; i <= juego.partidas[codigo].usuarios.length; i++) {
+			expect(juego.partidas[codigo].usuarios[i].impostor).toEqual(true);
+		}
+		
+	})
+
+	it("Verde ha abandonado la partida (tiene lag)",function(){
+		juego.unirAPartida(codigo,"Azul");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(2);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");
+		juego.unirAPartida(codigo,"Arcoiris");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(3);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");	  	
+		juego.unirAPartida(codigo,"Rojo");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(4);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("completado");		
+		usr.iniciarPartida();
+		for (var i = 0; i <= juego.partidas[codigo].usuarios.length; i++) {
+			expect(juego.partidas[codigo].usuarios[i]).toEqual(juego.partidas[codigo].usuarios[i].nombre!="Verde");
+		}
+		
+	})
+
    });
 })

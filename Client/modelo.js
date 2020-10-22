@@ -1,12 +1,14 @@
 function Juego(){
 	this.partidas={};
 	this.crearPartida=function(num,owner){
-		let codigo=this.obtenerCodigo();
-		if (!this.partidas[codigo]){
-			this.partidas[codigo]=new Partida(num,owner.nick);
-			owner.partida=this.partidas[codigo];
-		}
-		return codigo;
+		if(num >= 4 && num < 11){
+			let codigo=this.obtenerCodigo();
+			if (!this.partidas[codigo]){
+				this.partidas[codigo]=new Partida(num,owner.nick);
+				owner.partida=this.partidas[codigo];
+			}
+			return codigo;
+		}else return console.log("El numero de jugadores debe ser superior a 4 o menor a 10 para iniciar la partida")
 	}
 	this.unirAPartida=function(codigo,nick){
 		if (this.partidas[codigo]){
@@ -59,7 +61,17 @@ function Partida(num,owner){
 	this.eliminarUsuario=function(nick){
 		delete this.usuarios[nick];
 	}
+	this.asignarImpostor=function(nick){
+		this.fase.asignarImpostor(nick,this);
+	}
+
+	this.impostor=function(nick) {
+		let usr = Object.keys(this.usuarios);
+		this.usuarios[usr[randomInt(0,usr.length)]].impostor = true;		
+	}
 	this.agregarUsuario(owner);
+
+	
 }
 
 function Inicial(){
@@ -77,11 +89,13 @@ function Inicial(){
 		partida.eliminarUsuario(nick);
 		//comprobar si no quedan usr
 	}
+
 }
 
 function Completado(){
 	this.nombre="completado";
 	this.iniciarPartida=function(partida){
+
 		partida.fase=new Jugando();
 	}
 	this.agregarUsuario=function(nick,partida){
@@ -106,10 +120,18 @@ function Jugando(){
 		console.log("La partida ya ha comenzado");
 	}
 	this.iniciarPartida=function(partida){
+		partida.asignarImpostor();
+		console.log("Hay un impostor entre nosotros...");
 	}
 	this.abandonarPartida=function(nick,partida){
 		partida.eliminarUsuario(nick);
 		//comprobar si termina la partida
+				if(partida.usuarios.length <= 0){
+					console.log(this.nick, "era el ultimo jugador de la partida");
+				}
+	}
+	this.asignarImpostor=function(nick,partida){
+		partida.impostor(nick);
 	}
 }
 
@@ -129,6 +151,8 @@ function Usuario(nick,juego){
 	this.nick=nick;
 	this.juego=juego;
 	this.partida;
+	this.impostor = false;
+	this.encargo = "ninguno";
 	this.crearPartida=function(num){
 		return this.juego.crearPartida(num,this);
 	}
@@ -137,6 +161,9 @@ function Usuario(nick,juego){
 	}
 	this.abandonarPartida=function(){
 		this.partida.abandonarPartida(this.nick);
+	}
+	this.asignarImpostor=function(){
+		this.partida.asignarImpostor(this.nick);
 	}
 }
 
