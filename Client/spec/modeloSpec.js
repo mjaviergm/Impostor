@@ -100,5 +100,43 @@ describe("El juego del impostor", function() {
 		
 	})
 
+	it("Azul ha sido atacado",function(){
+		juego.unirAPartida(codigo,"Azul");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(2);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");
+		juego.unirAPartida(codigo,"Arcoiris");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(3);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");	  	
+		juego.unirAPartida(codigo,"Rojo");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(4);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("completado");		
+		usr.iniciarPartida();
+		juego.partidas[codigo].usuarios.Rojo.impostor=true;
+		juego.partidas[codigo].usuarios.Azul.impostor=false;
+		juego.partidas[codigo].usuarios.Rojo.matarA("Azul");
+		expect(juego.partidas[codigo].usuarios.Azul.estado.nombre).toEqual("muerto");
+	})
+
+	it("Azul recibe una tarea (por primera vez hará algo útil, esperemos)",function(){
+		juego.unirAPartida(codigo,"Azul");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(2);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");
+		juego.unirAPartida(codigo,"Arcoiris");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(3);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("inicial");	  	
+		juego.unirAPartida(codigo,"Rojo");
+	  	var num=Object.keys(juego.partidas[codigo].usuarios).length;
+	  	expect(num).toEqual(4);
+		expect(juego.partidas[codigo].fase.nombre).toEqual("completado");		
+		usr.iniciarPartida();
+		expect(juego.partidas[codigo].usuarios.Azul.encargo).not.toEqual("ninguno");
+		
+	})
+
    });
 })
