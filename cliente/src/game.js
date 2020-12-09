@@ -338,20 +338,47 @@ function lanzarJuego(){
 
   function lanzarJugadorRemoto(nick,numJugador){
     var frame=recursos[numJugador].frame;
-    jugadores[nick]=crear.physics.add.sprite(spawnPoint.x+15*numJugador, spawnPoint.y,"varios"+numJugador,frame);   
+    jugadores[nick]=crear.physics.add.sprite(spawnPoint.x, spawnPoint.y,"varios"+numJugador,frame);   
     crear.physics.add.collider(jugadores[nick], worldLayer);
   }
 
-  function moverRemoto(direccion,nick,numJugador)
-  {
-    const speed = 175;
-    var remoto=jugadores[nick];
+  // function moverRemoto(direccion,nick,numJugador)
+  // {
+  //   const speed = 175;
+  //   var remoto=jugadores[nick];
 
-    if (direccion=="left"){
-      remoto.body.setVelocityX(-speed);
+  //   if (direccion=="left"){
+  //     remoto.body.setVelocityX(-speed);
+  //   }
+  // }
+  function mover(datos){
+        var direccion=datos.direccion;
+        var nick=datos.nick;
+        var numJugador=datos.numJugador;
+        var x=datos.x;
+        var y=datos.y;
+        var remoto=jugadores[nick];
+        const speed = 175;
+        //const prevVelocity = player.body.velocity.clone();
+        const nombre=recursos[numJugador].sprite;
+       if (remoto){
+        remoto.body.setVelocity(0);
+        remoto.setX(x);
+        remoto.setY(y);
+        remoto.body.velocity.normalize().scale(speed);
+        if (direccion=="left") {
+          remoto.anims.play(nombre+"-left-walk", true);
+        } else if (direccion=="right") {
+          remoto.anims.play(nombre+"-right-walk", true);
+        } else if (direccion=="up") {
+          remoto.anims.play(nombre+"-back-walk", true);
+        } else if (direccion=="down") {
+          remoto.anims.play(nombre+"-front-walk", true);
+        } else {
+          remoto.anims.stop();
+        }
+      }
     }
-  }
-
 
 
   function update(time, delta) {
@@ -408,28 +435,5 @@ function lanzarJuego(){
       // else if (prevVelocity.y > 0) player.setTexture("gabe", "gabe-front-walk");
     }
 
-    function mover(direccion,nick,numJugador,x,y){
-      var remoto=jugadores[nick];
-      const speed = 175;
-      const prevVelocity = player.body.velocity.clone();
-      const nombre=recursos[numJugador].sprite;
-     if (remoto){
-      remoto.body.setVelocity(0);
-      remoto.setX(x);
-      remoto.setY(y);
-      remoto.body.velocity.normalize().scale(speed);
-      if (direccion=="left") {
-        remoto.anims.play(nombre+"-left-walk", true);
-      } else if (direccion=="right") {
-        remoto.anims.play(nombre+"-right-walk", true);
-      } else if (direccion=="up") {
-        remoto.anims.play(nombre+"-back-walk", true);
-      } else if (direccion=="down") {
-        remoto.anims.play(nombre+"-front-walk", true);
-      } else {
-        remoto.anims.stop();
-      }
-    }
-  }
-
-  }
+  
+}

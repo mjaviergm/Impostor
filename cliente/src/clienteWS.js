@@ -46,7 +46,8 @@ function ClienteWS(){
 		this.socket.emit("votar",this.nick,this.codigo,sospechoso);
 	}
 	this.movimiento=function(direccion,x,y){
-		this.socket.emit("movimiento",this.nick,this.codigo,this.numJugador,direccion,x,y);
+		var datos={nick:this.nick,codigo:this.codigo,numJugador:this.numJugador,direccion:direccion,x:x,y:y};
+		this.socket.emit("movimiento",datos);
 	}
 
 	this.obtenerEncargo=function(){
@@ -81,7 +82,7 @@ function ClienteWS(){
 		});
 
 		this.socket.on("moverRemoto",function(datos){
-			mover(datos.direccion,datos.nick,datos.numJugador,datos.x,datos.y);
+			mover(datos);
 		});
 		this.socket.on('dibujarRemoto',function(lista){
 			console.log(lista);

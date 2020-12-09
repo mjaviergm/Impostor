@@ -70,7 +70,7 @@ function Juego(){
 	}
 
 	this.numeroValido=function(num){
-		return (num>=4 && num<=10)
+		return (num>=2 && num<=10)
 	}
 
 	this.obtenerCodigo=function(){
@@ -154,7 +154,7 @@ function Partida(num,owner,codigo,juego){
 		return Object.keys(this.usuarios).length;
 	}
 	this.comprobarMinimo=function(){
-		return this.numeroJugadores()>=4;
+		return this.numeroJugadores()>=2;
 	}
 	this.comprobarMaximo=function(){
 		return this.numeroJugadores()<this.maximo;
