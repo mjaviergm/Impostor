@@ -29,7 +29,7 @@ function lanzarJuego(){
 
   let game;// = new Phaser.Game(config);
   let cursors;
-  let player;
+  var player;
   //let player2;
   var jugadores={}; //la colección de jugadores remotos
   let showDebug = false;
@@ -39,6 +39,9 @@ function lanzarJuego(){
   var crear;
   var spawnPoint;
   var recursos=[{frame:0,sprite:"ana"},{frame:3,sprite:"pepe"},{frame:6,sprite:"tom"},{frame:9,sprite:"rayo"}];
+  var remotos;
+  var muertos;
+  var capaTareas;
 
   function preload() {
     this.load.image("tiles", "cliente/assets/tilesets/tuxmon-sample-32px-extruded.png");
@@ -56,6 +59,7 @@ function lanzarJuego(){
     this.load.spritesheet("varios1","cliente/assets/personaje/pjs1/Male/m2.png",{frameWidth:32,frameHeight:32});
     this.load.spritesheet("varios2","cliente/assets/personaje/pjs1/Male/m3.png",{frameWidth:32,frameHeight:32});
     this.load.spritesheet("varios3","cliente/assets/personaje/pjs1/Male/m4.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("muertos","cliente/assets/personaje/pjs1/Male/perro.png",{frameWidth:32,frameHeight:32});
   }
 
   function create() {
@@ -69,9 +73,12 @@ function lanzarJuego(){
     // Parameters: layer name (or index) from Tiled, tileset, x, y
     const belowLayer = map.createStaticLayer("Below Player", tileset, 0, 0);
     worldLayer = map.createStaticLayer("World", tileset, 0, 0);
+    capaTareas = map.createStaticLayer("capaTareas", tileset, 0, 0);
+
     const aboveLayer = map.createStaticLayer("Above Player", tileset, 0, 0);
 
     worldLayer.setCollisionByProperty({ collides: true });
+    capaTareas.setCollisionByProperty({ collides: true });
 
     // By default, everything gets depth sorted on the screen in the order we created things. Here, we
     // want the "Above Player" layer to sit on top of the player, so we explicitly give it a depth.
@@ -321,16 +328,73 @@ function lanzarJuego(){
     // camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     cursors = crear.input.keyboard.createCursorKeys();
-   
-    lanzarJugador(ws.numJugador);
+    remotos = crear.add.group();
+    muertos=crear.add.group();
+    teclaA=crear.input.keyboard.addKey('a');
+    teclaV=crear.input.keyboard.addKey('v');
+    teclaT=crear.input.keyboard.addKey('t');
+    lanzarJugador(ws.nick,ws.numJugador);
     ws.estoyDentro();
   }
 
-  function lanzarJugador(numJugador){
+  function crearColision(){
+    if(crear && ws.impostor){
+      crear.physics.add.overlap(player,remotos,kill);
+    }
+  }
+
+  function kill(sprite,inocente){
+    //dibujar el inocente muerto
+    //avisar del ataque 
+    var nick =inocente.nick;
+    if(teclaA.isDown){
+    ws.matarA(nick);
+    }
+  }
+
+  function dibujarMuereInocente(inocente){
+    var x=jugadores[inocente].x;
+    var y=jugadores[inocente].y;
+    var numJugador=jugadores[inocente].numJugador;
+
+    var muerto = crear.physics.add.sprite(x, y,"muertos",recursos[numJugador].frame);    
+    //jugadores[inocente].setTexture("muertos",recurs...)
+    //agregar jugadores[inocente] al grupo muertos
+    muertos.add(muerto);
+
+    crear.physics.add.overlap(player,muertos,votacion);
+  }
+
+  function votacion(sprite,muerto){
+    //comprobar si el jugador local pulsa la tecla de votacion "v"
+    //en ese caso, llamamos al servidor para lanzar votacion
+    if(teclaV.isDown){
+      ws.lanzarVotacion(); //Sin paráemtro? Sin nick?
+    }
+  }
+
+  function tareas(sprite,tarea){
+    //¿el jugador puede realizar la tarea?
+    //en tal caso, permitir realizar la tarea
+    //dibujar la tarea
+    tarea.nombre="jardines";
+    if(ws.encargo==tarea.nombre){
+      console.log("realizar tarea " + ws.encargo);
+      ws.realizarTarea();
+    }
+
+  }
+
+  function lanzarJugador(nick,numJugador){
     player = crear.physics.add.sprite(spawnPoint.x, spawnPoint.y,"varios"+numJugador,recursos[numJugador].frame);    
     // Watch the player and worldLayer for collisions, for the duration of the scene:
     crear.physics.add.collider(player, worldLayer);
-    //crear.physics.add.collider(player2, worldLayer);
+    crear.physics.add.collider(player, capaTareas, tareas);
+
+    jugadores[nick]=player;
+    jugadores[nick].nick=nick
+    jugadores[nick].numJugador=numJugador;
+
     camera = crear.cameras.main;
     camera.startFollow(player);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -340,6 +404,9 @@ function lanzarJuego(){
     var frame=recursos[numJugador].frame;
     jugadores[nick]=crear.physics.add.sprite(spawnPoint.x, spawnPoint.y,"varios"+numJugador,frame);   
     crear.physics.add.collider(jugadores[nick], worldLayer);
+    jugadores[nick].nick=nick;
+    jugadores[nick].numJugador=numJugador
+    remotos.add(jugadores[nick]);
   }
 
   // function moverRemoto(direccion,nick,numJugador)
@@ -391,7 +458,7 @@ function lanzarJuego(){
     // Stop any previous movement from the last frame
     player.body.setVelocity(0);
     //player2.body.setVelocity(0);
-    
+    //PARA CAMINAR if(ws.estado!="muerto"){}
 
     // Horizontal movement
     if (cursors.left.isDown) {
@@ -415,7 +482,7 @@ function lanzarJuego(){
 
     // Normalize and scale the velocity so that player can't move faster along a diagonal
     player.body.velocity.normalize().scale(speed);
-    ws.movimiento(direccion,player.body.x,player.body.y);
+    ws.movimiento(direccion,player.x,player.y);
     // Update the animation last and give left/right animations precedence over up/down animations
     if (cursors.left.isDown) {
       player.anims.play(nombre+"-left-walk", true);

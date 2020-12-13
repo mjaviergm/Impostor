@@ -129,15 +129,13 @@ function ServidorWS(){
 		    	cli.enviarRemitente(socket,"recibirEncargo",{"encargo":encargo,"impostor":impostor});
 		    });
 
-		    socket.on('atacar',function(nick,codigo,inocente){
-		    	
-		    	juego.atacar(nick,codigo,inocente);
+		    socket.on('matarA',function(nick,codigo,inocente){
+		    	juego.matarA(nick,codigo,inocente);
 		    	var partida =juego.partidas[codigo];
 		    	var fase = partida.fase.nombre;
+		    	cli.enviarATodos(io,codigo,"muereInocente",inocente);
 		    	if(fase=="final"){
 		    		cli.enviarATodos(io,codigo,"final","ganan impostores");		    	
-		    	}else{
-		    		cli.enviarRemitente(socket,"muereInocente",fase);
 		    	}
 
 		    });

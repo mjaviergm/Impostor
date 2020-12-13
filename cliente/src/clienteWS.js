@@ -5,6 +5,9 @@ function ClienteWS(){
 	this.codigo=undefined;
 	this.owner=false;
 	this.numJugador=undefined;
+	this.impostor;
+	this.estado;
+	this.encargo;
 	this.ini=function(){
 		this.socket=io.connect();
 		this.lanzarSocketSrv();
@@ -53,8 +56,8 @@ function ClienteWS(){
 	this.obtenerEncargo=function(){
 		this.socket.emit("obtenerEncargo",this.nick,this.codigo);
 	}
-	this.atacar=function(inocente){
-		this.socket.emit("atacar",this.nick,this.codigo,inocente);
+	this.matarA=function(inocente){
+		this.socket.emit("matarA",this.nick,this.codigo,inocente);
 	}
 	
 
@@ -70,6 +73,7 @@ function ClienteWS(){
 			if (data.codigo!="fallo"){
 				cli.owner=true;
 				cli.numJugador=0;
+				cli.estado="vivo";
 				cw.mostrarEsperandoRival();
 			}
 		});
@@ -77,6 +81,7 @@ function ClienteWS(){
 			cli.codigo=data.codigo;
 			cli.nick=data.nick;
 			cli.numJugador=data.numJugador;
+			cli.estado="vivo";
 			console.log(data);
 			cw.mostrarEsperandoRival();
 		});
@@ -91,6 +96,7 @@ function ClienteWS(){
 					lanzarJugadorRemoto(lista[i].nick,lista[i].numJugador);
 				}
 			}
+			crearColision();
 		})
 		this.socket.on('nuevoJugador',function(lista){
 			//console.log(nick+" se une a la partida");
@@ -120,6 +126,7 @@ function ClienteWS(){
 		});
 		this.socket.on("votacion",function(data){
 			console.log(data);
+			//dibujarVotacion(lista)
 		});
 		this.socket.on("finalVotacion",function(data){
 			console.log(data);
@@ -135,12 +142,22 @@ function ClienteWS(){
 		});
 		this.socket.on("recibirEncargo",function(data){
 			console.log(data);
+			cli.impostor=data.impostor;
+			cli.encargo=data.encargo;
+			if(data.impostor){
+				$('#avisarImpostor').modal("show");
+				//crearColision();
+			}
 		});
 		this.socket.on("final",function(data){
 			console.log(data);
 		});
-		this.socket.on("muereInocente",function(data){
-			console.log(data);
+		this.socket.on("muereInocente",function(inocente){
+			console.log('muere '+inocente);
+			if(cli.nick==inocente){
+				cli.estado="muerto";
+			}
+			dibujarMuereInocente(inocente);
 		});
 
 

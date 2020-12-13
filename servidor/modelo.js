@@ -1,4 +1,5 @@
-function Juego(){
+function Juego(min){
+	this.min=min;
 	this.partidas={};
 	this.crearPartida=function(num,owner){
 		let codigo="fallo";
@@ -70,7 +71,7 @@ function Juego(){
 	}
 
 	this.numeroValido=function(num){
-		return (num>=2 && num<=10)
+		return (num>=this.min && num<=10)
 	}
 
 	this.obtenerCodigo=function(){
@@ -154,7 +155,7 @@ function Partida(num,owner,codigo,juego){
 		return Object.keys(this.usuarios).length;
 	}
 	this.comprobarMinimo=function(){
-		return this.numeroJugadores()>=2;
+		return this.numeroJugadores()>=this.juego.min;
 	}
 	this.comprobarMaximo=function(){
 		return this.numeroJugadores()<this.maximo;
@@ -397,11 +398,12 @@ function Completado(){
 	}
 	this.agregarUsuario=function(nick,partida){
 		if (partida.comprobarMaximo()){
-			partida.puedeAgregarUsuario(nick);
+			return partida.puedeAgregarUsuario(nick);
 		}
 		else{
 			console.log("Lo siento, numero máximo")
 		}
+	//return partida;
 	}
 	this.abandonarPartida=function(nick,partida){
 		partida.eliminarUsuario(nick);
