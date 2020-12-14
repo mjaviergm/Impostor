@@ -38,7 +38,7 @@ function lanzarJuego(){
   let map;
   var crear;
   var spawnPoint;
-  var recursos=[{frame:0,sprite:"ana"},{frame:3,sprite:"pepe"},{frame:6,sprite:"tom"},{frame:9,sprite:"rayo"}];
+  var recursos=[{frame:10,sprite:"ana"},{frame:10,sprite:"pepe"},{frame:10,sprite:"tom"},{frame:10,sprite:"rayo"}];
   var remotos;
   var muertos;
   var capaTareas;
@@ -386,8 +386,9 @@ function lanzarJuego(){
   }
 
   function lanzarJugador(nick,numJugador){
-    player = crear.physics.add.sprite(spawnPoint.x, spawnPoint.y,"varios"+numJugador,recursos[numJugador].frame);    
+    player = crear.physics.add.sprite(spawnPoint.x+25*numJugador, spawnPoint.y,"varios"+numJugador,recursos[numJugador].frame);    
     // Watch the player and worldLayer for collisions, for the duration of the scene:
+
     crear.physics.add.collider(player, worldLayer);
     crear.physics.add.collider(player, capaTareas, tareas);
 
@@ -402,7 +403,7 @@ function lanzarJuego(){
 
   function lanzarJugadorRemoto(nick,numJugador){
     var frame=recursos[numJugador].frame;
-    jugadores[nick]=crear.physics.add.sprite(spawnPoint.x, spawnPoint.y,"varios"+numJugador,frame);   
+    jugadores[nick]=crear.physics.add.sprite(spawnPoint.x+25*numJugador, spawnPoint.y,"varios"+numJugador,frame);   
     crear.physics.add.collider(jugadores[nick], worldLayer);
     jugadores[nick].nick=nick;
     jugadores[nick].numJugador=numJugador
