@@ -20,6 +20,7 @@ function ControlWeb($){
 			var nick=$('#nick').val();
 			var num=$("#num").val();
 			$("#mostrarCP").remove();
+			console.log(num);
 			ws.crearPartida(nick,num);
 		});
 	}
