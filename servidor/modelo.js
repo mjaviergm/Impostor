@@ -5,17 +5,28 @@ function Juego(min){
 	this.partidas={};
 	this.cad = new cad.Cad();
 	this.crearPartida=function(num,owner){
+		let codigo = "fallo";
+		if(!this.numeroValido){
+			return codigo;
+		}
+		do{
+			codigo=this.obtenerCodigo();
+		}while(this.partidas[codigo]);
+		this.partidas[codigo]=new Partida(num,owner,codigo,this);
+		return codigo;
+	}
+	/*this.crearPartida=function(num,owner){
 		let codigo="fallo";
 		if (!this.partidas[codigo] && this.numeroValido(num)){
 			codigo=this.obtenerCodigo();
 			this.partidas[codigo]=new Partida(num,owner,codigo,this);
 			//owner.partida=this.partidas[codigo];
 		}
-		else{
+		else{ 
 			console.log(codigo);
 		}
 		return codigo;
-	}
+	}*/
 	this.unirAPartida=function(codigo,nick){
 		var res=-1;
 		if (this.partidas[codigo]){
