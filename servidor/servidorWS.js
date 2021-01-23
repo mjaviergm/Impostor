@@ -42,6 +42,7 @@ function ServidorWS(){
 
 		    socket.on('iniciarPartida',function(nick,codigo){
 	    		juego.iniciarPartida(nick,codigo);
+	    		console.log(juego.partidas[codigo]);
 		    	var fase=juego.partidas[codigo].fase.nombre;
 		    	if(fase=="jugando"){
 		    		cli.enviarATodos(io, codigo, "partidaIniciada",fase);

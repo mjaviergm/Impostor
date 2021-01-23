@@ -141,7 +141,7 @@ function ControlWeb($){
 		this.limpiarModal();
 		var cadena="<p id ='avisarImpostor'>"+msg+'</p>';
 		$("#contenidoModal").append(cadena);
-		$("#pie").append('<button type="button" id="cerrar" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>');
+		$("#pie").append('<div id="footButton"><button type="button" id="cerrar" class="btn btn-secondary" data-dismiss="modal">Cerrar</button></div>');
 		$('#modalGeneral').modal("show");
 	}
 
@@ -149,7 +149,7 @@ function ControlWeb($){
 		this.limpiarModal();
 		var cadena="<p id ='avisarImpostor'>"+msg+'</p>';
 		$("#contenidoModal").append(cadena);
-		$("#pie").append('<button type="button" id="volverMenu" class="btn btn-secondary" data-dismiss="modal">Volver al menú</button>');
+		$("#pie").append('<div id="footButton"><button type="button" id="volverMenu" class="btn btn-secondary" data-dismiss="modal">Volver al menú</button></div>');
 		$('#modalGeneral').modal("show");
 		$('#volverMenu').click(function(){
 			ws.abandonarPartida();
@@ -160,7 +160,7 @@ function ControlWeb($){
 		this.limpiarModal();
 		var cadena="<p id ='tarea'>"+tarea+'</p>';
 		$("#contenidoModal").append(cadena);
-		$("#pie").append('<button type="button" id="cerrar" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>');
+		$("#pie").append('<div id="footButton"><button type="button" id="cerrar" class="btn btn-secondary" data-dismiss="modal">Cerrar</button></div>');
 		$('#modalGeneral').modal("show");
 	}
 
@@ -200,7 +200,8 @@ function ControlWeb($){
 		$('#tarea').remove();
 		$('#cerrar').remove();
 		$('#votacion').remove();
-		$('votar').remove();
+		$('#votar').remove();
+		$('#footButton').remove();
 
 	}
 }

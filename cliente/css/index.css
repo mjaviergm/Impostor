@@ -1,0 +1,29 @@
+body{
+    position:relative; 
+    background: url(../img/nieve.gif) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+#rowGame{
+	margin-top: 5%;
+}
+
+.titulo{
+	margin-left: 25%;
+	font-size: 60px;
+	font-style: 'bond';
+}
+
+.fondoRow{
+	border-radius: 6px;
+	border-color: white;
+	background: #ffffffc0;
+}
+
+.fondoRow div{
+	margin-bottom: 0.7%;
+	font-style: 'bond';
+}

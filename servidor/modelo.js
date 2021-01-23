@@ -527,8 +527,8 @@ function Completado(){
 	}
 	this.abandonarPartida=function(nick,partida){
 		var retorno = partida.puedeAbandonarPartida(nick);
-		if (!this.comprobarMinimo()){
-			this.fase=new Inicial();
+		if (!partida.comprobarMinimo()){
+			partida.fase=new Inicial();
 		} 
 		return retorno;
 	}

@@ -69,10 +69,7 @@ function ClienteWS(){
 	this.abandonarPartida=function(){
 		this.socket.emit("abandonarPartida",this.nick,this.codigo);
 	}
-	this.reset=function(jugando){
-		if(jugando){
-			resetGame();
-		}
+	this.reset=function(){
 		this.nick=undefined;
 		this.codigo=undefined;
 		this.owner=false;
@@ -83,6 +80,7 @@ function ClienteWS(){
 		this.fase=undefined;
 		cw.mostrarCrearPartida(4);
 		this.listaPartidasDisponibles();
+		resetGame();
 	}
 
 	//servidor WS dentro del cliente
@@ -173,6 +171,7 @@ function ClienteWS(){
 			if(data.fase=="final"){
 				console.log("Mamasita me da igual ya tu sabe")
 				cw.mostrarModalFinal(data.msg);
+				cli.reset();
 			}
 		});
 		this.socket.on("haVotado",function(data){
@@ -201,6 +200,7 @@ function ClienteWS(){
 		this.socket.on("final",function(data){
 			console.log(data);
 			finPartida(data);
+			cli.reset();
 		});
 		this.socket.on("muereInocente",function(inocente){
 			console.log('muere '+inocente);
@@ -222,11 +222,12 @@ function ClienteWS(){
 
 		});
 		this.socket.on("hasAbandonado",function(data){
-			cli.reset(data);
+			cli.reset();
 		});
 		this.socket.on("abandonaJugando",function(data){
 			jugadorAbandonaPartida(data.nick);
 			cw.mostrarModalSimple(data.msg);
+			cli.reset();
 		})
 
 	}

@@ -50,6 +50,9 @@ function lanzarJuego(){
   var remotag={};
 
   function resetGame(){
+    if(!game){
+      return ;
+    }
        game.destroy();// = new Phaser.Game(config);
        cursors=null;
        player=null;
