@@ -78,7 +78,7 @@ function ClienteWS(){
 		this.estado=undefined;
 		this.encargo=undefined;
 		this.fase=undefined;
-		cw.mostrarCrearPartida(4);
+		cw.mostrarCrearPartida(10);
 		this.listaPartidasDisponibles();
 		resetGame();
 	}
