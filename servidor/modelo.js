@@ -177,7 +177,7 @@ function Partida(num,owner,codigo,juego){
 		return this.numeroJugadores()>=this.juego.min;
 	}
 	this.comprobarMaximo=function(){
-		return this.numeroJugadores()<this.maximo;
+		return this.numeroJugadores()<=this.maximo;
 		//return Object.keys(this.usuarios).length<this.maximo
 	}
 	this.obtenerListaJugadores=function(){
