@@ -8,6 +8,7 @@ function ClienteWS(){
 	this.impostor;
 	this.estado;
 	this.encargo;
+	this.fase;
 	this.ini=function(){
 		this.socket=io.connect();
 		this.lanzarSocketSrv();
@@ -20,7 +21,9 @@ function ClienteWS(){
 		//this.nick=nick;
 		this.socket.emit("unirAPartida",nick,codigo);
 	}
-
+	this.console=function(message){
+		console.log(message);
+	}
 	this.iniciarPartida=function(nick,codigo){
 		this.socket.emit("iniciarPartida",this.nick,this.codigo);
 	}
@@ -49,7 +52,7 @@ function ClienteWS(){
 		this.socket.emit("votar",this.nick,this.codigo,sospechoso);
 	}
 	this.movimiento=function(direccion,x,y){
-		var datos={nick:this.nick,codigo:this.codigo,numJugador:this.numJugador,direccion:direccion,x:x,y:y};
+		var datos={nick:this.nick,codigo:this.codigo,numJugador:this.numJugador,direccion:direccion,x:x,y:y,estado:this.estado};
 		this.socket.emit("movimiento",datos);
 	}
 
@@ -60,6 +63,27 @@ function ClienteWS(){
 		this.socket.emit("matarA",this.nick,this.codigo,inocente);
 	}
 	
+	this.realizarTarea=function(nick,codigo){
+		this.socket.emit("realizarTarea",this.nick,this.codigo);
+	}	
+	this.abandonarPartida=function(){
+		this.socket.emit("abandonarPartida",this.nick,this.codigo);
+	}
+	this.reset=function(jugando){
+		if(jugando){
+			resetGame();
+		}
+		this.nick=undefined;
+		this.codigo=undefined;
+		this.owner=false;
+		this.numJugador=undefined;
+		this.impostor=undefined;
+		this.estado=undefined;
+		this.encargo=undefined;
+		this.fase=undefined;
+		cw.mostrarCrearPartida(4);
+		this.listaPartidasDisponibles();
+	}
 
 	//servidor WS dentro del cliente
 	this.lanzarSocketSrv=function(){
@@ -109,9 +133,12 @@ function ClienteWS(){
 		this.socket.on('partidaIniciada',function(fase){
 			console.log("Partida en fase: "+fase);
 			if (fase=="jugando"){
+				cli.fase=fase;
 				cli.obtenerEncargo();
 				cw.limpiar();
+				cw.mostrarJuego();
 				lanzarJuego();
+				//cw.mostrarModalTarea(fase.lista);
 			}
 		});
 		this.socket.on('recibirListaPartidasDisponibles',function(lista){
@@ -124,15 +151,34 @@ function ClienteWS(){
 		this.socket.on('recibirListaPartidas',function(lista){
 			console.log(lista);
 		});
-		this.socket.on("votacion",function(data){
-			console.log(data);
-			//dibujarVotacion(lista)
+		this.socket.on("votacion",function(lista){
+			console.log(lista);
+			cli.fase="votacion";
+			votarOn=false;
+			report();
+			cw.mostrarModalVotacion(lista);
 		});
 		this.socket.on("finalVotacion",function(data){
-			console.log(data);
+			cli.fase="jugando";
+			//cw.cerrarModal();
+			$('#modalGeneral').modal('show');
+			if(ws.nick==data.elegido){
+				ws.estado="muerto";
+			}
+			//mostrar otro modal
+			cw.mostrarModalSimple("Se ha votado a: " + data.elegido);
+			if(data.fase=="jugando"){
+				votarOn=true;
+			}
+			if(data.fase=="final"){
+				console.log("Mamasita me da igual ya tu sabe")
+				cw.mostrarModalFinal(data.msg);
+			}
 		});
 		this.socket.on("haVotado",function(data){
 			console.log(data);
+			//actualizar lista
+			
 		});
 		this.socket.on('lanzarVotacion',function(data){
 			console.log(data);
@@ -145,12 +191,16 @@ function ClienteWS(){
 			cli.impostor=data.impostor;
 			cli.encargo=data.encargo;
 			if(data.impostor){
-				$('#avisarImpostor').modal("show");
+				//$('#avisarImpostor').modal("show");
+				cw.mostrarModalSimple('eres el impostor');
 				//crearColision();
+			}else{
+				cw.mostrarModalTarea("Se te ha asignado la tarea de: " + data.encargo);
 			}
 		});
 		this.socket.on("final",function(data){
 			console.log(data);
+			finPartida(data);
 		});
 		this.socket.on("muereInocente",function(inocente){
 			console.log('muere '+inocente);
@@ -160,6 +210,24 @@ function ClienteWS(){
 			dibujarMuereInocente(inocente);
 		});
 
+		this.socket.on("tareaRealizada",function(data){
+			console.log(data);
+			//tareasOn=true;
+		});
+
+		this.socket.on("hasAtacado",function(fase){
+			if(fase=="jugando"){
+				ataquesOn=true;
+			}
+
+		});
+		this.socket.on("hasAbandonado",function(data){
+			cli.reset(data);
+		});
+		this.socket.on("abandonaJugando",function(data){
+			jugadorAbandonaPartida(data.nick);
+			cw.mostrarModalSimple(data.msg);
+		})
 
 	}
 

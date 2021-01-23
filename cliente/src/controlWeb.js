@@ -1,6 +1,7 @@
 function ControlWeb($){
 
 	this.mostrarCrearPartida=function(min){
+		this.limpiar();
 		var cadena='<div id="mostrarCP"><h3>Crear partida</h3>';
 		cadena=cadena+'<div class="form-group">';
 		cadena=cadena+'<label for="nick">Nick:</label>';
@@ -51,7 +52,7 @@ function ControlWeb($){
 	          var nick=$('#nick').val();
 	          if (codigo && nick){
 	            $('#mostrarListaPartidas').remove();
-	            $('#crearPartida').remove();
+	            $('#mostrarCP').remove();
 	            ws.unirAPartida(nick,codigo);
 	          }
 	    });
@@ -64,11 +65,17 @@ function ControlWeb($){
 	    cadena=cadena+'<img id="gif" src="cliente/img/esperando.gif"><br>';
 	    if (ws.owner){
 			cadena=cadena+'<input type="button" class="btn btn-primary btn-md" id="iniciar" value="Iniciar partida">';    
+		}else{
+			cadena=cadena+'<input type="button" class="btn btn-primary btn-md" id="abandonar" value="Abandonar partida">';
 		}
+		  
 		cadena=cadena+'</div>';
 	    $('#esperando').append(cadena);
 	    $('#iniciar').click(function(){
 	    	ws.iniciarPartida();
+	    });
+	    $('#abandonar').click(function(){
+	    	ws.abandonarPartida();
 	    });
 	  }
 
@@ -99,6 +106,16 @@ function ControlWeb($){
 		});
 	}
 
+	this.mostrarJuego=function(){
+		$('#mostrarJuego').remove();
+		var cadena='<div id="mostrarJuego"><div id="game-container"></div>';
+		cadena=cadena+'<input type="button" class="btn btn-primary btn-md" id="abandonar" value="Abandonar partida"></div>';
+		$('#game').append(cadena);
+ 		$('#abandonar').click(function(){
+	    	ws.abandonarPartida();
+	    });
+	}
+
 	this.mostrarListaJugadores=function(lista){
 	  	$('#mostrarListaEsperando').remove();
 	  	var cadena='<div id="mostrarListaEsperando"><h3>Lista Jugadores</h3>';
@@ -115,5 +132,75 @@ function ControlWeb($){
 		$('#mostrarListaPartidas').remove();
 		$('#mER').remove();
 		$('#mostrarListaEsperando').remove();
+		$('#mostrarCP').remove();
+		$('#mostrarJuego').remove();
+
+	}
+
+	this.mostrarModalSimple=function(msg){
+		this.limpiarModal();
+		var cadena="<p id ='avisarImpostor'>"+msg+'</p>';
+		$("#contenidoModal").append(cadena);
+		$("#pie").append('<button type="button" id="cerrar" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>');
+		$('#modalGeneral').modal("show");
+	}
+
+	this.mostrarModalFinal=function(msg){
+		this.limpiarModal();
+		var cadena="<p id ='avisarImpostor'>"+msg+'</p>';
+		$("#contenidoModal").append(cadena);
+		$("#pie").append('<button type="button" id="volverMenu" class="btn btn-secondary" data-dismiss="modal">Volver al menú</button>');
+		$('#modalGeneral').modal("show");
+		$('#volverMenu').click(function(){
+			ws.abandonarPartida();
+		});
+	}
+
+	this.mostrarModalTarea=function(tarea){
+		this.limpiarModal();
+		var cadena="<p id ='tarea'>"+tarea+'</p>';
+		$("#contenidoModal").append(cadena);
+		$("#pie").append('<button type="button" id="cerrar" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>');
+		$('#modalGeneral').modal("show");
+	}
+
+	this.mostrarModalVotacion=function(lista){
+		this.limpiarModal();
+		var cadena='<div id="votacion"><h3>Votación</h3>';		
+		cadena =cadena+'<div class="input-group">';
+	  	 for(var i=0;i<lista.length;i++){
+	  		cadena=cadena+'<div><input type="radio" name="optradio" value="'+lista[i].nick+'">'+lista[i].nick+'</div>';
+	  	}
+	  	cadena=cadena+'<div><input type="radio" name="optradio" value="-1"> Saltar voto</div>';
+		cadena=cadena+'</div>';
+		if(ws.estado!="muerto"){
+			cadena=cadena+'<button type="button" id="votar" class="btn btn-secondary" >Votar</button>';
+		}
+		$("#contenidoModal").append(cadena);
+		//$("#pie").append('<button type="button" id="votar" class="btn btn-secondary" >Votar</button>');
+		$('#modalGeneral').modal("show");
+		
+		var sospechoso=undefined;
+		$('.input-group input').on('change', function() {
+		   sospechoso=$('input[name=optradio]:checked', '.input-group').val(); 
+		});
+		
+		$('#votar').click(function(){
+	    	if (sospechoso!="-1"){
+		    	ws.votar(sospechoso);
+		    }
+		    else{
+	    		ws.saltarVoto();
+	    	}
+	    });
+	}
+
+	this.limpiarModal=function(){
+		$('#avisarImpostor').remove();
+		$('#tarea').remove();
+		$('#cerrar').remove();
+		$('#votacion').remove();
+		$('votar').remove();
+
 	}
 }

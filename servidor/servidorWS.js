@@ -28,36 +28,24 @@ function ServidorWS(){
 		       	//enviar a todos los clientes la lista de partidas
 		       	var lista=juego.listaPartidasDisponibles();
 		       	cli.enviarGlobal(socket,"recibirListaPartidasDisponibles",lista);
-
 		    });
 		    socket.on('unirAPartida',function(nick,codigo){
 		    	//nick o codigo nulo
 		    	var res=juego.unirAPartida(codigo,nick);
-		    	//console.log(res);
 		    	socket.join(codigo);
 		    	var owner = juego.partidas[codigo].nickOwner;
 		    	console.log("Usuario "+nick+" se une a partida " + codigo);
 		    	cli.enviarRemitente(socket,"unidoAPartida",res);
 		    	var lista=juego.obtenerListaJugadores(codigo);
-		    	//cli.enviarATodosMenosRemitente(socket,codigo,"nuevoJugador",nick);
 		    	cli.enviarATodos(io,codigo, "nuevoJugador",lista);
 		    });
 
 		    socket.on('iniciarPartida',function(nick,codigo){
-		    	//iniciar partida ToDo
-		    	//controlar si nick es el owner
-		    	//cli.enviarATodos(socket,codigo,"partidaIniciada",fase);
-		    	// juego.iniciarPartida(nick,codigo);
-		    	// var fase=juego.partidas[codigo].fase.nombre;
-		    	// if(fase=="jugando"){
-		    	// 	cli.enviarATodos(io, codigo, "partidaIniciada",fase);
-		    	// }
-		    	// else{
-		    	// 	cli.enviarRemitente(socket,"esperando",fase);
-	    		// }
 	    		juego.iniciarPartida(nick,codigo);
 		    	var fase=juego.partidas[codigo].fase.nombre;
-		    	cli.enviarATodos(io, codigo, "partidaIniciada",fase);
+		    	if(fase=="jugando"){
+		    		cli.enviarATodos(io, codigo, "partidaIniciada",fase);
+		    	}
 		    });
 
 		    socket.on('listaPartidasDisponibles',function(){
@@ -82,8 +70,9 @@ function ServidorWS(){
 		    socket.on('lanzarVotacion',function(nick,codigo){
 		    	juego.lanzarVotacion(nick,codigo);
 		    	var partida=juego.partidas[codigo];
-		    	//var fase=juego.partidas[codigo].fase.nombre;
-		    	cli.enviarATodos(io, codigo, "votacion",partida.fase.nombre);
+		    	var lista= partida.obtenerListaJugadoresVivos();
+		    	console.log("console server." + lista);
+		    	cli.enviarATodos(io, codigo, "votacion", lista);
 		    });
 		    socket.on('estoyDentro',function(nick,codigo){
 		    	//var usr=juego.obtenerJugador(nick,codigo);
@@ -102,9 +91,13 @@ function ServidorWS(){
 		    socket.on('saltarVoto',function(nick,codigo){
 		    	var partida = juego.partidas[codigo];
 		    	juego.saltarVoto(nick,codigo);
+		    	var fase = partida.fase.nombre;
 		    	if(partida.todosHanVotado()){
-		    		var data={"elegido":partida.elegido,"fase":partida.fase.nombre};
-		    		cli.enviarATodos(io,codigo,"finalVotacion",data);		    	
+		    		var data={"elegido":partida.elegido,"fase":fase};
+		    		cli.enviarATodos(io,codigo,"finalVotacion",data);
+		    		if(fase=="final"){
+				    	cli.enviarATodos(io,codigo,"final",partida.comprobarFinal());		    	
+				    }		    	
 		    	}else{
 		    		cli.enviarATodos(io,codigo,"haVotado",partida.listaHanVotado());
 		    	}
@@ -113,12 +106,19 @@ function ServidorWS(){
 
 		    socket.on('votar',function(nick,codigo,sospechoso){
 		    	var partida = juego.partidas[codigo];
-		    	juego.votar(nick,codigo,sospechoso);
+		    	var lista = partida.listaHanVotado();
+		    	var msg = juego.votar(nick,codigo,sospechoso);
+		    	var fase = partida.fase.nombre;
 		    	if(partida.todosHanVotado()){
-		    		var data={"elegido":partida.elegido,"fase":partida.fase.nombre};
-		    		cli.enviarATodos(io,codigo,"finalVotacion",data);		    	
+		    		console.log("ServidorWS.votar."+fase);
+		    		var data={"elegido":partida.elegido,"fase":fase,"msg":msg};
+		    		cli.enviarATodos(io,codigo,"finalVotacion",data);
+		    		if(fase=="final"){
+				    	cli.enviarATodos(io,codigo,"final",partida.comprobarFinal());		    	
+				    }		    	
 		    	}else{
-		    		cli.enviarATodos(io,codigo,"haVotado",partida.listaHanVotado());
+		    		
+		    		cli.enviarATodos(io,codigo,"haVotado",lista);
 		    	}
 
 		    });
@@ -130,15 +130,52 @@ function ServidorWS(){
 		    });
 
 		    socket.on('matarA',function(nick,codigo,inocente){
-		    	juego.matarA(nick,codigo,inocente);
+		    	console.log("ServidorWS.matarA");
 		    	var partida =juego.partidas[codigo];
-		    	var fase = partida.fase.nombre;
-		    	cli.enviarATodos(io,codigo,"muereInocente",inocente);
-		    	if(fase=="final"){
-		    		cli.enviarATodos(io,codigo,"final","ganan impostores");		    	
-		    	}
-
+				    var fase = partida.fase.nombre;
+		    	if(juego.matarA(nick,codigo,inocente)){
+				    cli.enviarATodos(io,codigo,"muereInocente",inocente);
+				}
+				cli.enviarRemitente(socket,"hasAtacado",fase);
+				if(fase=="final"){
+				    	cli.enviarATodos(io,codigo,"final",partida.comprobarFinal());		    	
+				    }
 		    });
+
+		    socket.on("realizarTarea",function(nick,codigo){
+		    	var partida=juego.partidas[codigo];
+		    	juego.realizarTarea(nick,codigo);
+		    	var percent=partida.obtenerPercentTarea(nick);
+		    	var global=partida.obtenerPercentGlobal();
+				cli.enviarRemitente(socket,"tareaRealizada",{"percent":percent,"goblal":global});			    	
+		    	var fase=partida.fase.nombre;
+		    	if (fase=="final"){
+			    	cli.enviarATodos(io, codigo, "final",partida.comprobarFinal());
+			    }
+		    });
+
+		    socket.on("abandonarPartida",function(nick,codigo){
+		    	if(juego.abandonarPartida(nick,codigo)){
+		    		if(juego.partidas[codigo] && juego.partidas[codigo].fase.nombre=="jugando"){
+		    			cli.enviarRemitente(socket,"hasAbandonado",true);
+			    		cli.enviarATodosMenosRemitente(socket,codigo,"abandonaJugando",{"nick":nick,"msg":"el usuario "+nick+" ha abandonado partida."});
+		    		}else{
+		    			if(!juego.partidas[codigo] || juego.partidas[codigo].fase.nombre=="final"){
+		    				cli.enviarRemitente(socket,"hasAbandonado",true);
+		    				cli.enviarATodos(io,codigo,"final",juego.partidas[codigo]?juego.partidas[codigo].comprobarFinal():"Eres el último jugador en la partida.")
+			    		}else{
+			    			cli.enviarRemitente(socket,"hasAbandonado",false);
+		    				cli.enviarATodosMenosRemitente(socket,codigo,"nuevoJugador",juego.obtenerListaJugadores(codigo));
+			    		}
+		    		}
+		    	}
+		    	/* 
+		    	FALTA ENVIAR A TODOS LISTA USUARIOS, REFRESCCAR REMITENTE WEI, PRUEBAS DE ABANDONAR PARTIDA Y AAAAAAAAH... JAJAJAJA... *SUSPIRO* *TOS* QUE NO PUEDO RESPIRAR, SISI
+		    	E INTENTAR OWNER
+		    	*/
+
+
+		    })
 
 		});
 	}

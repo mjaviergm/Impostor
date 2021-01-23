@@ -10,8 +10,8 @@ function lanzarJuego(){
 
   const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 500,
+    height: 400,
     parent: "game-container",
     pixelArt: true,
     physics: {
@@ -27,7 +27,7 @@ function lanzarJuego(){
     }
   };
 
-  let game;// = new Phaser.Game(config);
+  var game;// = new Phaser.Game(config);
   let cursors;
   var player;
   //let player2;
@@ -38,14 +38,43 @@ function lanzarJuego(){
   let map;
   var crear;
   var spawnPoint;
-  var recursos=[{frame:10,sprite:"ana"},{frame:10,sprite:"pepe"},{frame:10,sprite:"tom"},{frame:10,sprite:"rayo"}];
+  var recursos=[{frame:0,sprite:"ana"},{frame:0,sprite:"pepe"},{frame:0,sprite:"tom"},{frame:0,sprite:"rayo"},{frame:0,sprite:"paco"},{frame:0,sprite:"jose"},{frame:0,sprite:"esteban"},{frame:0,sprite:"luis"},{frame:0,sprite:"felipe"},{frame:0,sprite:"wence"}];
   var remotos;
   var muertos;
   var capaTareas;
+  var tareasOn=true;
+  var ataquesOn=true;
+  var votarOn=true;
+  var final=false;
+  var nametag;
+  var remotag={};
+
+  function resetGame(){
+       game.destroy();// = new Phaser.Game(config);
+       cursors=null;
+       player=null;
+      //let player2;
+       jugadores={}; //la colección de jugadores remotos
+       showDebug = false;
+       camera=null;
+       worldLayer=null;
+       map=null;
+       crear=null;
+       spawnPoint=null;
+       remotos=null;
+       muertos=null;
+       capaTareas=null;
+       tareasOn=true;
+       ataquesOn=true;
+       votarOn=true;
+       final=false;
+       nametag=null;
+       remotag={};
+  }
 
   function preload() {
     this.load.image("tiles", "cliente/assets/tilesets/tuxmon-sample-32px-extruded.png");
-    this.load.tilemapTiledJSON("map", "cliente/assets/tilemaps/tuxemon-town.json");
+    this.load.tilemapTiledJSON("map", "cliente/assets/tilemaps/filomena-town.json");
 
     // An atlas is a way to pack multiple images together into one texture. I'm using it to load all
     // the player animations (walking left, walking right, etc.) in one image. For more info see:
@@ -59,7 +88,13 @@ function lanzarJuego(){
     this.load.spritesheet("varios1","cliente/assets/personaje/pjs1/Male/m2.png",{frameWidth:32,frameHeight:32});
     this.load.spritesheet("varios2","cliente/assets/personaje/pjs1/Male/m3.png",{frameWidth:32,frameHeight:32});
     this.load.spritesheet("varios3","cliente/assets/personaje/pjs1/Male/m4.png",{frameWidth:32,frameHeight:32});
-    this.load.spritesheet("muertos","cliente/assets/personaje/pjs1/Male/perro.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("varios4","cliente/assets/personaje/pjs1/Male/m5.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("varios5","cliente/assets/personaje/pjs1/Male/m6.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("varios6","cliente/assets/personaje/pjs1/Male/m7.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("varios7","cliente/assets/personaje/pjs1/Male/m8.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("varios8","cliente/assets/personaje/pjs1/Male/m9.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("varios9","cliente/assets/personaje/pjs1/Male/m10.png",{frameWidth:32,frameHeight:32});
+    this.load.spritesheet("muertos","cliente/assets/personaje/pjs1/Male/tombstone.png",{frameWidth:32,frameHeight:64});
   }
 
   function create() {
@@ -322,6 +357,276 @@ function lanzarJuego(){
         //frameRate: 10,
         repeat: -1
       });
+      const anims6 = crear.anims;
+      anims6.create({
+        key: "paco-left-walk",
+        frames: anims.generateFrameNames("varios4", {
+          //prefix: "misa-left-walk.",
+          start: 3,
+          end: 5,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims6.create({
+        key: "paco-right-walk",
+        frames: anims.generateFrameNames("varios4", {
+          //prefix: "misa-left-walk.",
+          start: 6,
+          end: 8,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims6.create({
+        key: "paco-front-walk",
+        frames: anims.generateFrameNames("varios4", {
+          //prefix: "misa-left-walk.",
+          start: 0,
+          end: 2,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims6.create({
+        key: "paco-back-walk",
+        frames: anims.generateFrameNames("varios4", {
+          //prefix: "misa-left-walk.",
+          start: 9,
+          end: 11,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      const anims7 = crear.anims;
+      anims7.create({
+        key: "jose-left-walk",
+        frames: anims.generateFrameNames("varios5", {
+          //prefix: "misa-left-walk.",
+          start: 3,
+          end: 5,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims7.create({
+        key: "jose-right-walk",
+        frames: anims.generateFrameNames("varios5", {
+          //prefix: "misa-left-walk.",
+          start: 6,
+          end: 8,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims7.create({
+        key: "jose-front-walk",
+        frames: anims.generateFrameNames("varios5", {
+          //prefix: "misa-left-walk.",
+          start: 0,
+          end: 2,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims7.create({
+        key: "jose-back-walk",
+        frames: anims.generateFrameNames("varios5", {
+          //prefix: "misa-left-walk.",
+          start: 9,
+          end: 11,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      const anims8 = crear.anims;
+      anims8.create({
+        key: "esteban-left-walk",
+        frames: anims.generateFrameNames("varios6", {
+          //prefix: "misa-left-walk.",
+          start: 3,
+          end: 5,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims8.create({
+        key: "esteban-right-walk",
+        frames: anims.generateFrameNames("varios6", {
+          //prefix: "misa-left-walk.",
+          start: 6,
+          end: 8,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims8.create({
+        key: "esteban-front-walk",
+        frames: anims.generateFrameNames("varios6", {
+          //prefix: "misa-left-walk.",
+          start: 0,
+          end: 2,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims8.create({
+        key: "esteban-back-walk",
+        frames: anims.generateFrameNames("varios6", {
+          //prefix: "misa-left-walk.",
+          start: 9,
+          end: 11,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      const anims9 = crear.anims;
+      anims9.create({
+        key: "luis-left-walk",
+        frames: anims.generateFrameNames("varios7", {
+          //prefix: "misa-left-walk.",
+          start: 3,
+          end: 5,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims9.create({
+        key: "luis-right-walk",
+        frames: anims.generateFrameNames("varios7", {
+          //prefix: "misa-left-walk.",
+          start: 6,
+          end: 8,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims9.create({
+        key: "luis-front-walk",
+        frames: anims.generateFrameNames("varios7", {
+          //prefix: "misa-left-walk.",
+          start: 0,
+          end: 2,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims9.create({
+        key: "luis-back-walk",
+        frames: anims.generateFrameNames("varios7", {
+          //prefix: "misa-left-walk.",
+          start: 9,
+          end: 11,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      const anims10 = crear.anims;
+      anims10.create({
+        key: "felipe-left-walk",
+        frames: anims.generateFrameNames("varios8", {
+          //prefix: "misa-left-walk.",
+          start: 3,
+          end: 5,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims10.create({
+        key: "felipe-right-walk",
+        frames: anims.generateFrameNames("varios8", {
+          //prefix: "misa-left-walk.",
+          start: 6,
+          end: 8,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims10.create({
+        key: "felipe-front-walk",
+        frames: anims.generateFrameNames("varios8", {
+          //prefix: "misa-left-walk.",
+          start: 0,
+          end: 2,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims10.create({
+        key: "felipe-back-walk",
+        frames: anims.generateFrameNames("varios8", {
+          //prefix: "misa-left-walk.",
+          start: 9,
+          end: 11,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      const anims11 = crear.anims;
+      anims11.create({
+        key: "wence-left-walk",
+        frames: anims.generateFrameNames("varios9", {
+          //prefix: "misa-left-walk.",
+          start: 3,
+          end: 5,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims11.create({
+        key: "wence-right-walk",
+        frames: anims.generateFrameNames("varios9", {
+          //prefix: "misa-left-walk.",
+          start: 6,
+          end: 8,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims11.create({
+        key: "wence-front-walk",
+        frames: anims.generateFrameNames("varios9", {
+          //prefix: "misa-left-walk.",
+          start: 0,
+          end: 2,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
+      anims11.create({
+        key: "wence-back-walk",
+        frames: anims.generateFrameNames("varios9", {
+          //prefix: "misa-left-walk.",
+          start: 9,
+          end: 11,
+          //zeroPad: 3
+        }),
+        //frameRate: 10,
+        repeat: -1
+      });
 
     // const camera = this.cameras.main;
     // camera.startFollow(player);
@@ -339,7 +644,7 @@ function lanzarJuego(){
 
   function crearColision(){
     if(crear && ws.impostor){
-      crear.physics.add.overlap(player,remotos,kill);
+      crear.physics.add.overlap(player,remotos,kill,()=>{return ataquesOn});
     }
   }
 
@@ -348,16 +653,24 @@ function lanzarJuego(){
     //avisar del ataque 
     var nick =inocente.nick;
     if(teclaA.isDown){
-    ws.matarA(nick);
+      ataquesOn=false;
+      ws.matarA(nick);
     }
+  }
+
+  function jugadorAbandonaPartida(nick){
+    jugadores[nick].destroy();
   }
 
   function dibujarMuereInocente(inocente){
     var x=jugadores[inocente].x;
     var y=jugadores[inocente].y;
     var numJugador=jugadores[inocente].numJugador;
+    var muerto = crear.physics.add.sprite(x, y,"muertos",5);
 
-    var muerto = crear.physics.add.sprite(x, y,"muertos",recursos[numJugador].frame);    
+    if(ws.nick!=inocente){
+      jugadores[inocente].visible=false;   
+    }
     //jugadores[inocente].setTexture("muertos",recurs...)
     //agregar jugadores[inocente] al grupo muertos
     muertos.add(muerto);
@@ -369,28 +682,30 @@ function lanzarJuego(){
     //comprobar si el jugador local pulsa la tecla de votacion "v"
     //en ese caso, llamamos al servidor para lanzar votacion
     if(teclaV.isDown){
+      votarOn=false;
       ws.lanzarVotacion(); //Sin paráemtro? Sin nick?
     }
   }
 
-  function tareas(sprite,tarea){
-    //¿el jugador puede realizar la tarea?
-    //en tal caso, permitir realizar la tarea
-    //dibujar la tarea
-    tarea.nombre="jardines";
-    if(ws.encargo==tarea.nombre){
+  function tareas(sprite,objeto){
+    if(ws.encargo==objeto.properties.tarea && teclaT.isDown){
+      tareasOn=false;
       console.log("realizar tarea " + ws.encargo);
       ws.realizarTarea();
+      cw.mostrarModalTarea(ws.encargo);
     }
 
   }
 
   function lanzarJugador(nick,numJugador){
-    player = crear.physics.add.sprite(spawnPoint.x+25*numJugador, spawnPoint.y,"varios"+numJugador,recursos[numJugador].frame);    
+    var x = spawnPoint.x+numJugador+24*2;
+    var nombreSprite = "varios" + numJugador;
+    //ws.console("varios"+numJugador);
+    player = crear.physics.add.sprite( spawnPoint.x+15*numJugador, spawnPoint.y,"varios"+numJugador,recursos[numJugador].frame);
+    ws.console("Siuuuu " + recursos[numJugador].frame);
     // Watch the player and worldLayer for collisions, for the duration of the scene:
-
     crear.physics.add.collider(player, worldLayer);
-    crear.physics.add.collider(player, capaTareas, tareas);
+    crear.physics.add.collider(player, capaTareas, tareas,()=>{return tareasOn});
 
     jugadores[nick]=player;
     jugadores[nick].nick=nick
@@ -399,15 +714,20 @@ function lanzarJuego(){
     camera = crear.cameras.main;
     camera.startFollow(player);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    nametag=crear.add.text(player.x-20,player.y-40,ws.nick,{fontSize:'14px',fill:'#337CFF'});
   }
 
   function lanzarJugadorRemoto(nick,numJugador){
+    var x = spawnPoint.x+numJugador+24*2;
     var frame=recursos[numJugador].frame;
-    jugadores[nick]=crear.physics.add.sprite(spawnPoint.x+25*numJugador, spawnPoint.y,"varios"+numJugador,frame);   
+
+    jugadores[nick]=crear.physics.add.sprite(spawnPoint.x+15*numJugador, spawnPoint.y,"varios"+numJugador,frame);   
     crear.physics.add.collider(jugadores[nick], worldLayer);
     jugadores[nick].nick=nick;
     jugadores[nick].numJugador=numJugador
     remotos.add(jugadores[nick]);
+    remotag[nick]=crear.add.text(jugadores[nick].x-20, jugadores[nick].y-40,nick,{fontSize:'14px',fill:'#33FFC6'});
   }
 
   // function moverRemoto(direccion,nick,numJugador)
@@ -419,89 +739,134 @@ function lanzarJuego(){
   //     remoto.body.setVelocityX(-speed);
   //   }
   // }
+  function resetVisible(){
+    for(var nick in jugadores){
+      jugadores[nick].visible=true;
+    }
+  }
+
   function mover(datos){
-        var direccion=datos.direccion;
         var nick=datos.nick;
-        var numJugador=datos.numJugador;
-        var x=datos.x;
-        var y=datos.y;
         var remoto=jugadores[nick];
-        const speed = 175;
-        //const prevVelocity = player.body.velocity.clone();
-        const nombre=recursos[numJugador].sprite;
-       if (remoto){
-        remoto.body.setVelocity(0);
-        remoto.setX(x);
-        remoto.setY(y);
-        remoto.body.velocity.normalize().scale(speed);
-        if (direccion=="left") {
-          remoto.anims.play(nombre+"-left-walk", true);
-        } else if (direccion=="right") {
-          remoto.anims.play(nombre+"-right-walk", true);
-        } else if (direccion=="up") {
-          remoto.anims.play(nombre+"-back-walk", true);
-        } else if (direccion=="down") {
-          remoto.anims.play(nombre+"-front-walk", true);
-        } else {
-          remoto.anims.stop();
+        if(remoto && !final){
+          var direccion=datos.direccion;
+
+          var numJugador=datos.numJugador;
+          var x=datos.x;
+          var y=datos.y;
+          
+          const speed = 175;
+          //const prevVelocity = player.body.velocity.clone();
+          const nombre=recursos[numJugador].sprite;
+           if (datos.estado!="muerto" || ws.estado=="muerto"){
+            remoto.body.setVelocity(0);
+            remoto.setX(x);
+            remoto.setY(y);
+            remotag[nick].visible=true;
+            remotag[nick].setX(x-20);
+            remotag[nick].setY(y-40);
+            remoto.body.velocity.normalize().scale(speed);
+            if (direccion=="left") {
+              remoto.anims.play(nombre+"-left-walk", true);
+            } else if (direccion=="right") {
+              remoto.anims.play(nombre+"-right-walk", true);
+            } else if (direccion=="up") {
+              remoto.anims.play(nombre+"-back-walk", true);
+            } else if (direccion=="down") {
+              remoto.anims.play(nombre+"-front-walk", true);
+            } else {
+              remoto.anims.stop();
+            }
+          }else{
+            remoto.visible=false;
+            remotag[nick].visible=false;
+          }
         }
-      }
     }
 
+  function abandonarPartida(nick){
+    jugadores[nick].destroy();
+  }
+
+  function report(){
+    /*Esta funcion se encarga de eliminar todos las tumbas, 
+      si se ha llamado a reportar*/
+    var i = 0;
+    for(i=0;i<muertos.children.size;i++){
+        muertos.children.entries[0].destroy();
+      }
+  }
+
+
+  function finPartida(data){
+    final=true;
+    ws.fase="final";
+    cw.mostrarModalSimple("Fin de la partida --->" + data);
+  }
 
   function update(time, delta) {
+    if(ws.fase!="jugando"){
+      return ;
+    }
+    if(ws.estado=="muerto"){
+      resetVisible();
+    }
     const speed = 175;
     var direccion="stop";
     const prevVelocity = player.body.velocity.clone();
 
     const nombre=recursos[ws.numJugador].sprite;
+    if(!final){
+      player.body.setVelocity(0);
+      //player2.body.setVelocity(0);
+      //PARA CAMINAR if(ws.estado!="muerto"){}
 
+      // Horizontal movement
+      if (cursors.left.isDown) {
+        player.body.setVelocityX(-speed);
+        direccion="left";
+      } else if (cursors.right.isDown) {
+        player.body.setVelocityX(speed);
+        direccion="right";
+      }
+
+
+      // Vertical movement
+      if (cursors.up.isDown) {
+        player.body.setVelocityY(-speed);
+        direccion="up";
+      } else if (cursors.down.isDown) {
+        player.body.setVelocityY(speed);
+        direccion="down";
+      }
+
+
+      // Normalize and scale the velocity so that player can't move faster along a diagonal
+      player.body.velocity.normalize().scale(speed);
+      nametag.setX(player.x-20);
+      nametag.setY(player.y-40);
+      ws.movimiento(direccion,player.x,player.y);
+      // Update the animation last and give left/right animations precedence over up/down animations
+      if (cursors.left.isDown) {
+        player.anims.play(nombre+"-left-walk", true);
+      } else if (cursors.right.isDown) {
+        player.anims.play(nombre+"-right-walk", true);
+      } else if (cursors.up.isDown) {
+        player.anims.play(nombre+"-back-walk", true);
+      } else if (cursors.down.isDown) {
+        player.anims.play(nombre+"-front-walk", true);
+      } else {
+        player.anims.stop();
+
+        // If we were moving, pick and idle frame to use
+        // if (prevVelocity.x < 0) player.setTexture("gabe", "gabe-left-walk");
+        // else if (prevVelocity.x > 0) player.setTexture("gabe", "gabe-right-walk");
+        // else if (prevVelocity.y < 0) player.setTexture("gabe", "gabe-back-walk");
+        // else if (prevVelocity.y > 0) player.setTexture("gabe", "gabe-front-walk");
+      }
+    }
     // Stop any previous movement from the last frame
-    player.body.setVelocity(0);
-    //player2.body.setVelocity(0);
-    //PARA CAMINAR if(ws.estado!="muerto"){}
-
-    // Horizontal movement
-    if (cursors.left.isDown) {
-      player.body.setVelocityX(-speed);
-      direccion="left";
-    } else if (cursors.right.isDown) {
-      player.body.setVelocityX(speed);
-      direccion="right";
-    }
-
-
-    // Vertical movement
-    if (cursors.up.isDown) {
-      player.body.setVelocityY(-speed);
-      direccion="up";
-    } else if (cursors.down.isDown) {
-      player.body.setVelocityY(speed);
-      direccion="down";
-    }
-
-
-    // Normalize and scale the velocity so that player can't move faster along a diagonal
-    player.body.velocity.normalize().scale(speed);
-    ws.movimiento(direccion,player.x,player.y);
-    // Update the animation last and give left/right animations precedence over up/down animations
-    if (cursors.left.isDown) {
-      player.anims.play(nombre+"-left-walk", true);
-    } else if (cursors.right.isDown) {
-      player.anims.play(nombre+"-right-walk", true);
-    } else if (cursors.up.isDown) {
-      player.anims.play(nombre+"-back-walk", true);
-    } else if (cursors.down.isDown) {
-      player.anims.play(nombre+"-front-walk", true);
-    } else {
-      player.anims.stop();
-
-      // If we were moving, pick and idle frame to use
-      // if (prevVelocity.x < 0) player.setTexture("gabe", "gabe-left-walk");
-      // else if (prevVelocity.x > 0) player.setTexture("gabe", "gabe-right-walk");
-      // else if (prevVelocity.y < 0) player.setTexture("gabe", "gabe-back-walk");
-      // else if (prevVelocity.y > 0) player.setTexture("gabe", "gabe-front-walk");
-    }
+    
 
   
 }
